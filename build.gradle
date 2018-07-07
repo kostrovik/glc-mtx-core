@@ -1,15 +1,42 @@
 plugins {
     id 'java'
     id 'application'
+    id 'maven'
 }
 
-group 'kostrovik'
+group 'com.github.kostrovik'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+mainClassName = 'core.AppCore'
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    jcenter()
+}
+
+dependencies {
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.2.0")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
+
+    implementation 'com.github.kostrovik:jfx-control-builder:master-SNAPSHOT'
+    implementation 'com.github.kostrovik:configurator:master-SNAPSHOT'
+
+    testCompile "org.testfx:testfx-core:4.0.13-alpha"
+    testCompile "org.testfx:testfx-junit5:4.0.13-alpha"
+}
+
+test {
+    useJUnitPlatform()
 }
