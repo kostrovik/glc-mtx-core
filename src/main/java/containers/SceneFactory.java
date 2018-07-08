@@ -1,10 +1,14 @@
 package containers;
 
 import com.sun.javafx.scene.control.skin.ScrollBarSkin;
-import core.Configurator;
 import core.behavior.EventListenerInterface;
+import interfaces.ModuleConfiguratorInterface;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -15,10 +19,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import views.ContentBuilderInterface;
 import views.ContentViewInterface;
+import views.menu.MenuBuilderInterface;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,9 +38,9 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
     private static Logger logger = LogManager.getLogger(SceneFactory.class);
     private static Stage mainWindow;
     private static Map<String, ContentViewInterface> storage;
-    private Configurator configurator;
+    private ModuleConfiguratorInterface configurator;
 
-    public SceneFactory(Stage mainWindow, Configurator configurator) {
+    public SceneFactory(Stage mainWindow, ModuleConfiguratorInterface configurator) {
         this.configurator = configurator;
 
         if (SceneFactory.mainWindow == null) {
@@ -72,7 +78,7 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         mainWindow.setScene(scene);
     }
 
-    private ContentBuilderInterface prepareBuilder(String viewName, EventObject event, Pane content) {
+    private ContentBuilderInterface prepareViewBuilder(String viewName, EventObject event, Pane content) {
 
         ContentBuilderInterface contentBuilder = null;
 
@@ -98,7 +104,7 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
     }
 
     private ContentViewInterface createView(String viewName, EventObject event, Pane content) {
-        ContentBuilderInterface contentBuilder = prepareBuilder(viewName, event, content);
+        ContentBuilderInterface contentBuilder = prepareViewBuilder(viewName, event, content);
         return contentBuilder != null ? contentBuilder.build(event, content) : null;
     }
 
@@ -106,9 +112,18 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         VBox vbox = new VBox();
         Scene scene = new Scene(vbox);
 
+        MenuBuilderInterface menu = prepareMenuBuilder();
+        List<MenuItem> menuItems = menu.getMenu();
+        MenuBar menuBar = new MenuBar();
+        menuBar.setPadding(new Insets(0, 0, 0, 0));
+        Menu addDataMenu = new Menu("Matrix");
+        addDataMenu.getItems().addAll(menuItems);
+
+        menuBar.getMenus().addAll(addDataMenu);
+
         Pane content = new Pane();
         content.setId("scene-content");
-        vbox.getChildren().addAll(content);
+        vbox.getChildren().addAll(menuBar, content);
 
         setBackground(content);
 
@@ -116,6 +131,30 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         content.prefHeightProperty().bind(vbox.heightProperty());
 
         return scene;
+    }
+
+    private MenuBuilderInterface prepareMenuBuilder() {
+        MenuBuilderInterface menuBuilder = null;
+
+        Map<String, Object> menu = configurator.getModuleMenu();
+
+        String builderClassName = (String) menu.get("builder");
+        Class<?> builderClass;
+        try {
+            builderClass = Class.forName(builderClassName);
+            Constructor<?> constructor = builderClass.getDeclaredConstructor(ModuleConfiguratorInterface.class);
+            menuBuilder = (MenuBuilderInterface) constructor.newInstance(configurator);
+        } catch (ClassNotFoundException e) {
+            logger.error(String.format("Для меню не найден класс builder %s.", builderClassName), e);
+        } catch (NoSuchMethodException e) {
+            logger.error(String.format("Не задан конструктор для builder с необходимымой сигнатурой getDeclaredConstructor(%s).", ModuleConfiguratorInterface.class.getName()), e);
+        } catch (IllegalAccessException e) {
+            logger.error("Конструктор для builder не доступен.", e);
+        } catch (InstantiationException | InvocationTargetException e) {
+            logger.error(String.format("Не возможно создать объект builder %s.", builderClassName), e);
+        }
+
+        return menuBuilder;
     }
 
     private Region errorCreateScene(Pane parent) {

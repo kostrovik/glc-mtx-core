@@ -31,7 +31,7 @@ dependencies {
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
 
     implementation 'com.github.kostrovik:jfx-control-builder:master-SNAPSHOT'
-    implementation 'com.github.kostrovik:configurator:master-SNAPSHOT'
+    implementation 'com.github.kostrovik:configurator:1.2'
 
     testCompile "org.testfx:testfx-core:4.0.13-alpha"
     testCompile "org.testfx:testfx-junit5:4.0.13-alpha"

@@ -1,6 +1,7 @@
 package core;
 
 import containers.SceneFactory;
+import interfaces.ModuleConfiguratorInterface;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -18,12 +19,10 @@ import java.util.EventObject;
  */
 public class AppCore extends Application {
     private static Logger logger = LogManager.getLogger(AppCore.class);
-    private static Configurator configurator;
+    private static ModuleConfiguratorInterface configurator;
 
     public static void main(String[] args) {
         configurator = new Configurator();
-
-        System.out.println(configurator.getConfig());
         launch(args);
     }
 

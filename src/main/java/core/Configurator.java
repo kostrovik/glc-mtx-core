@@ -9,13 +9,16 @@ import java.util.Map;
  * github:  https://github.com/kostrovik/glc-mtx-core
  */
 public class Configurator extends ModuleConfigurator {
+
     public Map<String, String> getViews() {
-        Map<String, Object> config = getModuleConfig();
+        Map<String, Object> config = getConfig();
 
         return (Map<String, String>) config.get("views");
     }
 
-    private Map<String, Object> getModuleConfig() {
-        return (Map<String, Object>) ((Map) getConfig().get("module")).get("core");
+    public Map<String, Object> getModuleMenu() {
+        Map<String, Object> config = getConfig();
+
+        return (Map<String, Object>) config.get("menu");
     }
 }
