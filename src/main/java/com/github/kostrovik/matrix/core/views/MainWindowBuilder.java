@@ -1,9 +1,12 @@
-package views;
+package com.github.kostrovik.matrix.core.views;
 
-import com.sun.javafx.scene.control.skin.ScrollBarSkin;
+import com.sun.javafx.scene.control.Properties;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -47,8 +50,8 @@ public class MainWindowBuilder implements ContentBuilderInterface, ContentViewIn
 
         StackPane textHolder = new StackPane(value);
 
-        textHolder.prefWidthProperty().bind(parent.widthProperty().subtract(ScrollBarSkin.DEFAULT_WIDTH));
-        textHolder.prefHeightProperty().bind(parent.heightProperty().subtract(ScrollBarSkin.DEFAULT_WIDTH));
+        textHolder.prefWidthProperty().bind(parent.widthProperty().subtract(Properties.DEFAULT_WIDTH));
+        textHolder.prefHeightProperty().bind(parent.heightProperty().subtract(Properties.DEFAULT_WIDTH));
 
         view.setContent(textHolder);
 

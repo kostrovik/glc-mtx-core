@@ -1,4 +1,6 @@
-package core;
+package com.github.kostrovik.matrix.core.application;
+
+import com.github.kostrovik.configurator.core.ModuleConfigurator;
 
 import java.util.Map;
 

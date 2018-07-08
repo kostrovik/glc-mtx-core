@@ -1,8 +1,11 @@
-package containers;
+package com.github.kostrovik.matrix.core.containers;
 
-import com.sun.javafx.scene.control.skin.ScrollBarSkin;
-import core.behavior.EventListenerInterface;
-import interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.configurator.interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.matrix.core.application.behavior.EventListenerInterface;
+import com.github.kostrovik.matrix.core.views.ContentBuilderInterface;
+import com.github.kostrovik.matrix.core.views.ContentViewInterface;
+import com.github.kostrovik.matrix.core.views.menu.MenuBuilderInterface;
+import com.sun.javafx.scene.control.Properties;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -17,9 +20,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import views.ContentBuilderInterface;
-import views.ContentViewInterface;
-import views.menu.MenuBuilderInterface;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -171,8 +171,8 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
 
         StackPane textHolder = new StackPane(value);
 
-        textHolder.prefWidthProperty().bind(parent.widthProperty().subtract(ScrollBarSkin.DEFAULT_WIDTH));
-        textHolder.prefHeightProperty().bind(parent.heightProperty().subtract(ScrollBarSkin.DEFAULT_WIDTH));
+        textHolder.prefWidthProperty().bind(parent.widthProperty().subtract(Properties.DEFAULT_WIDTH));
+        textHolder.prefHeightProperty().bind(parent.heightProperty().subtract(Properties.DEFAULT_WIDTH));
 
         view.setContent(textHolder);
 

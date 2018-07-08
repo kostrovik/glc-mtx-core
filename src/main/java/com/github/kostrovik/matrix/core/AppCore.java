@@ -1,7 +1,8 @@
-package core;
+package com.github.kostrovik.matrix.core;
 
-import containers.SceneFactory;
-import interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.configurator.interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.matrix.core.application.Configurator;
+import com.github.kostrovik.matrix.core.containers.SceneFactory;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -37,7 +38,7 @@ public class AppCore extends Application {
 
         mainWindow.show();
 
-        /** Завершение приложения при закрытии окна. */
+        // Завершение приложения при закрытии окна.
         mainWindow.setOnHidden(event -> System.exit(0));
     }
 

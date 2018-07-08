@@ -1,7 +1,7 @@
-package views;
+package com.github.kostrovik.matrix.core.views;
 
-import containers.SceneFactory;
-import core.Configurator;
+import com.github.kostrovik.matrix.core.containers.SceneFactory;
+import com.github.kostrovik.matrix.core.application.Configurator;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;

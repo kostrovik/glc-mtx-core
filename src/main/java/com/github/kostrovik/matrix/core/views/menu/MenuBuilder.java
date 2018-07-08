@@ -1,6 +1,6 @@
-package views.menu;
+package com.github.kostrovik.matrix.core.views.menu;
 
-import interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.configurator.interfaces.ModuleConfiguratorInterface;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;

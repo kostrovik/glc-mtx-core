@@ -1,4 +1,4 @@
-package core.behavior;
+package com.github.kostrovik.matrix.core.application.behavior;
 
 import java.util.EventObject;
 

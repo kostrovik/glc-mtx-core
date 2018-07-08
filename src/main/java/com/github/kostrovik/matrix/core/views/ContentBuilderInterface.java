@@ -1,4 +1,4 @@
-package views;
+package com.github.kostrovik.matrix.core.views;
 
 import javafx.scene.layout.Pane;
 

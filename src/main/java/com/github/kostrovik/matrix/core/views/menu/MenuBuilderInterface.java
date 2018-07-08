@@ -1,4 +1,4 @@
-package views.menu;
+package com.github.kostrovik.matrix.core.views.menu;
 
 import javafx.scene.control.MenuItem;
 
