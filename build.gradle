@@ -37,7 +37,7 @@ dependencies {
     testCompile "org.testfx:testfx-core:4.0.13-alpha"
     testCompile "org.testfx:testfx-junit5:4.0.13-alpha"
 
-    compile group: 'org.openjfx', name: 'javafx.controls', version: '11.0.0-ea1'
+    compile group: 'org.openjfx', name: 'javafx.controls', version: '11.0.0-ea1', ext: 'pom'
     compile group: 'org.openjfx', name: 'javafx.base', version: '11.0.0-ea1'
     compile group: 'org.openjfx', name: 'javafx.graphics', version: '11.0.0-ea1'
 }
