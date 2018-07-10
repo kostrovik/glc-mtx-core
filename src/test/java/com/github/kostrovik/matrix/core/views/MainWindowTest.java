@@ -1,5 +1,6 @@
 package com.github.kostrovik.matrix.core.views;
 
+import com.github.kostrovik.matrix.core.application.ApplicationModulesConfigurator;
 import com.github.kostrovik.matrix.core.containers.SceneFactory;
 import com.github.kostrovik.matrix.core.application.Configurator;
 import javafx.scene.text.Text;
@@ -23,13 +24,13 @@ import static org.testfx.assertions.api.Assertions.assertThat;
  */
 @ExtendWith(ApplicationExtension.class)
 public class MainWindowTest extends ApplicationExtension {
-    private Configurator configurator;
+    private ApplicationModulesConfigurator modulesConfigurator;
 
     @Start
     void onStart(Stage mainWindow) {
-        configurator = new Configurator();
-        SceneFactory factory = new SceneFactory(mainWindow, configurator);
-        factory.initScene("main", new EventObject(new Object()));
+        modulesConfigurator = new ApplicationModulesConfigurator();
+        SceneFactory factory = new SceneFactory(mainWindow, modulesConfigurator);
+        factory.initScene("core", "main", new EventObject(new Object()));
         mainWindow.setTitle("Glance Matrix");
 
         mainWindow.show();

@@ -39,12 +39,10 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
     private static Logger logger = LogManager.getLogger(SceneFactory.class);
     private static Stage mainWindow;
     private static Map<String, ContentViewInterface> storage;
-    private ModuleConfiguratorInterface configurator;
     private ApplicationModulesConfigurator modulesConfigurator;
     private Map<String, ModuleConfiguratorInterface> configs = new ConcurrentHashMap<>();
 
-    public SceneFactory(Stage mainWindow, ModuleConfiguratorInterface configurator, ApplicationModulesConfigurator modulesConfigurator) {
-        this.configurator = configurator;
+    public SceneFactory(Stage mainWindow, ApplicationModulesConfigurator modulesConfigurator) {
         this.modulesConfigurator = modulesConfigurator;
 
         if (SceneFactory.mainWindow == null) {
@@ -160,11 +158,11 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         MenuBar menuBar = new MenuBar();
         menuBar.setPadding(new Insets(0, 0, 0, 0));
 
-        for (Object moduleName : modulesConfigurator.getConfig().keySet()) {
-            MenuBuilderInterface menu = prepareMenuBuilder((String) moduleName);
+        for (String moduleName : modulesConfigurator.getConfig().keySet()) {
+            MenuBuilderInterface menu = prepareMenuBuilder(moduleName);
             List<MenuItem> menuItems = menu.getMenu();
 
-            Menu addDataMenu = new Menu((String) moduleName);
+            Menu addDataMenu = new Menu(moduleName);
             addDataMenu.getItems().addAll(menuItems);
 
             menuBar.getMenus().add(addDataMenu);
@@ -183,7 +181,7 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         try {
             builderClass = Class.forName(builderClassName);
             Constructor<?> constructor = builderClass.getDeclaredConstructor(ModuleConfiguratorInterface.class);
-            menuBuilder = (MenuBuilderInterface) constructor.newInstance(configurator);
+            menuBuilder = (MenuBuilderInterface) constructor.newInstance(buildConfigs(moduleName));
         } catch (ClassNotFoundException e) {
             logger.error(String.format("Для меню не найден класс builder %s.", builderClassName), e);
         } catch (NoSuchMethodException e) {

@@ -16,8 +16,8 @@ import java.util.*;
  */
 public class ApplicationModulesConfigurator {
     private static Logger logger = LogManager.getLogger(ApplicationModulesConfigurator.class);
-    private static Map<String, Object> config;
-    private final static String defaultConfigFilePath = "core/configurations/app_modules.properties";
+    private Map<String, Object> config;
+    private final String defaultConfigFilePath = "core/configurations/app_modules.properties";
     private SettingsParser parser;
 
     public ApplicationModulesConfigurator() {
@@ -34,13 +34,6 @@ public class ApplicationModulesConfigurator {
 
     public Map<String, Object> getConfig() {
         return config;
-    }
-
-    public String getResourcesPath(String moduleName) {
-        String configuratorPath = (String) config.get(moduleName);
-        List<String> pathParams = parseKey(configuratorPath);
-        pathParams.remove(pathParams.size() - 1);
-        return String.join("/", pathParams);
     }
 
     private List<String> parseKey(String key) {
@@ -62,7 +55,7 @@ public class ApplicationModulesConfigurator {
             }
         }
 
-        parser = new SettingsParser(customSettings);
+        parser = new SettingsParser(result);
 
         return parser.getConfig();
     }

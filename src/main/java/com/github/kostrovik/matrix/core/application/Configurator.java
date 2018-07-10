@@ -11,7 +11,7 @@ import java.util.Map;
  * github:  https://github.com/kostrovik/glc-mtx-core
  */
 public class Configurator extends ModuleConfigurator {
-    private static final String defaultConfigFilePath = "core/configurations/module_config.properties";
+    private final String defaultConfigFilePath = "core/configurations/module_config.properties";
 
     public Map<String, String> getViews() {
         Map<String, Object> config = getConfig();

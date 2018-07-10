@@ -34,6 +34,9 @@ dependencies {
     compile 'com.github.kostrovik:jfx-control-builder:master-SNAPSHOT'
     compile 'com.github.kostrovik:configurator:master-SNAPSHOT'
 
+    // при добавлении в сборку новых модулей, добавить необходимые релизные версии
+//    compile 'com.github.kostrovik:glc-mtx-deal:1.2'
+
     testCompile "org.testfx:testfx-core:4.0.13-alpha"
     testCompile "org.testfx:testfx-junit5:4.0.13-alpha"
 
@@ -44,9 +47,26 @@ test {
     useJUnitPlatform()
 }
 
+// создание толктого, запускаемого jar архива вместе с зависимостями
 jar {
     from {
-        manifest.attributes("Main-Class": mainClassName);
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        manifest.attributes("Main-Class": mainClassName); // указание основного класса содержащего main(), для того чтобы jar был запускаемым по двойному клику
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } // инструкция чтобы были включены зависимости
     }
 }
+
+/**
+ * Задача для тестирования передаваемых параметров в метод main() основного класса.
+ * Использование.
+ * 1 раскомментировать команду.
+ * 2 использовать запуск НЕ через IDE а именно через консоль. В IDE не получилось поставить параметры запуска
+ * консольная команада  gradle run -Dargs="arg1 arg2 arg3"
+ * */
+
+/*run {
+    // Can pass all the properties:
+    systemProperties System.getProperties()
+
+    // Need to split the space-delimited value in the args
+    args System.getProperty("args", "").split()
+}*/
