@@ -1,6 +1,7 @@
 package com.github.kostrovik.matrix.core.containers;
 
 import com.github.kostrovik.configurator.interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.matrix.core.application.ApplicationModulesConfigurator;
 import com.github.kostrovik.matrix.core.application.behavior.EventListenerInterface;
 import com.github.kostrovik.matrix.core.views.ContentBuilderInterface;
 import com.github.kostrovik.matrix.core.views.ContentViewInterface;
@@ -39,9 +40,12 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
     private static Stage mainWindow;
     private static Map<String, ContentViewInterface> storage;
     private ModuleConfiguratorInterface configurator;
+    private ApplicationModulesConfigurator modulesConfigurator;
+    private Map<String, ModuleConfiguratorInterface> configs = new ConcurrentHashMap<>();
 
-    public SceneFactory(Stage mainWindow, ModuleConfiguratorInterface configurator) {
+    public SceneFactory(Stage mainWindow, ModuleConfiguratorInterface configurator, ApplicationModulesConfigurator modulesConfigurator) {
         this.configurator = configurator;
+        this.modulesConfigurator = modulesConfigurator;
 
         if (SceneFactory.mainWindow == null) {
             SceneFactory.mainWindow = mainWindow;
@@ -56,16 +60,16 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
 
     }
 
-    public void initScene(String viewName, EventObject event) {
-        Scene scene = getSceneTemplate();
+    public void initScene(String moduleName, String viewName, EventObject event) {
+        Scene scene = getSceneTemplate(moduleName);
         Pane content = (Pane) scene.lookup("#scene-content");
 
         ContentViewInterface contentView;
-        if (storage.containsKey(viewName)) {
-            contentView = storage.get(viewName);
+        if (storage.containsKey(moduleName + "_" + viewName)) {
+            contentView = storage.get(moduleName + "_" + viewName);
             contentView.initView(event);
         } else {
-            contentView = createView(viewName, event, content);
+            contentView = createView(moduleName, viewName, event, content);
         }
 
 
@@ -78,13 +82,41 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         mainWindow.setScene(scene);
     }
 
-    private ContentBuilderInterface prepareViewBuilder(String viewName, EventObject event, Pane content) {
+    private ModuleConfiguratorInterface buildConfigs(String moduleName) {
+        if (configs.containsKey(moduleName)) {
+            return configs.get(moduleName);
+        }
 
+        ModuleConfiguratorInterface moduleConfig = null;
+
+        String configClassName = (String) modulesConfigurator.getConfig().get(moduleName);
+
+        Class<?> configClass;
+        try {
+            configClass = Class.forName(configClassName);
+            Constructor<?> constructor = configClass.getDeclaredConstructor();
+            moduleConfig = (ModuleConfiguratorInterface) constructor.newInstance();
+        } catch (ClassNotFoundException e) {
+            logger.error(String.format("Для view не найден класс builder %s.", configClassName), e);
+        } catch (NoSuchMethodException e) {
+            logger.error("Не задан конструктор для builder с необходимымой сигнатурой getDeclaredConstructor().", e);
+        } catch (IllegalAccessException e) {
+            logger.error("Конструктор для builder не доступен.", e);
+        } catch (InstantiationException | InvocationTargetException e) {
+            logger.error(String.format("Не возможно создать объект builder %s.", configClassName), e);
+        }
+
+        configs.put(moduleName, moduleConfig);
+
+        return moduleConfig;
+    }
+
+    private ContentBuilderInterface prepareViewBuilder(String moduleName, String viewName, EventObject event, Pane content) {
         ContentBuilderInterface contentBuilder = null;
 
-        Map<String, String> views = configurator.getViews();
+        Map<String, String> views = buildConfigs(moduleName).getViews();
 
-        String builderClassName = views.get("main");
+        String builderClassName = views.get(viewName);
         Class<?> builderClass;
         try {
             builderClass = Class.forName(builderClassName);
@@ -103,27 +135,18 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         return contentBuilder;
     }
 
-    private ContentViewInterface createView(String viewName, EventObject event, Pane content) {
-        ContentBuilderInterface contentBuilder = prepareViewBuilder(viewName, event, content);
+    private ContentViewInterface createView(String moduleName, String viewName, EventObject event, Pane content) {
+        ContentBuilderInterface contentBuilder = prepareViewBuilder(moduleName, viewName, event, content);
         return contentBuilder != null ? contentBuilder.build(event, content) : null;
     }
 
-    private Scene getSceneTemplate() {
+    private Scene getSceneTemplate(String moduleName) {
         VBox vbox = new VBox();
         Scene scene = new Scene(vbox);
 
-        MenuBuilderInterface menu = prepareMenuBuilder();
-        List<MenuItem> menuItems = menu.getMenu();
-        MenuBar menuBar = new MenuBar();
-        menuBar.setPadding(new Insets(0, 0, 0, 0));
-        Menu addDataMenu = new Menu("Matrix");
-        addDataMenu.getItems().addAll(menuItems);
-
-        menuBar.getMenus().addAll(addDataMenu);
-
         Pane content = new Pane();
         content.setId("scene-content");
-        vbox.getChildren().addAll(menuBar, content);
+        vbox.getChildren().addAll(getSceneMenu(), content);
 
         setBackground(content);
 
@@ -133,10 +156,27 @@ public final class SceneFactory implements EventListenerInterface<EventObject> {
         return scene;
     }
 
-    private MenuBuilderInterface prepareMenuBuilder() {
+    private MenuBar getSceneMenu() {
+        MenuBar menuBar = new MenuBar();
+        menuBar.setPadding(new Insets(0, 0, 0, 0));
+
+        for (Object moduleName : modulesConfigurator.getConfig().keySet()) {
+            MenuBuilderInterface menu = prepareMenuBuilder((String) moduleName);
+            List<MenuItem> menuItems = menu.getMenu();
+
+            Menu addDataMenu = new Menu((String) moduleName);
+            addDataMenu.getItems().addAll(menuItems);
+
+            menuBar.getMenus().add(addDataMenu);
+        }
+
+        return menuBar;
+    }
+
+    private MenuBuilderInterface prepareMenuBuilder(String moduleName) {
         MenuBuilderInterface menuBuilder = null;
 
-        Map<String, Object> menu = configurator.getModuleMenu();
+        Map<String, Object> menu = buildConfigs(moduleName).getModuleMenu();
 
         String builderClassName = (String) menu.get("builder");
         Class<?> builderClass;

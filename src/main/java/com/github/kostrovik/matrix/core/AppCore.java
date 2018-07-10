@@ -1,6 +1,7 @@
 package com.github.kostrovik.matrix.core;
 
 import com.github.kostrovik.configurator.interfaces.ModuleConfiguratorInterface;
+import com.github.kostrovik.matrix.core.application.ApplicationModulesConfigurator;
 import com.github.kostrovik.matrix.core.application.Configurator;
 import com.github.kostrovik.matrix.core.containers.SceneFactory;
 import javafx.application.Application;
@@ -21,17 +22,20 @@ import java.util.EventObject;
 public class AppCore extends Application {
     private static Logger logger = LogManager.getLogger(AppCore.class);
     private static ModuleConfiguratorInterface configurator;
+    private static ApplicationModulesConfigurator modulesConfigurator;
 
     public static void main(String[] args) {
         configurator = new Configurator();
+        modulesConfigurator = new ApplicationModulesConfigurator();
+
         launch(args);
     }
 
     public void start(Stage mainWindow) {
         logger.info("Запуск приложения.");
 
-        SceneFactory factory = new SceneFactory(mainWindow, configurator);
-        factory.initScene("main", new EventObject(new Object()));
+        SceneFactory factory = new SceneFactory(mainWindow, configurator, modulesConfigurator);
+        factory.initScene("core", "main", new EventObject(new Object()));
         mainWindow.setTitle("Glance Matrix");
 
         setStageSize(mainWindow);
