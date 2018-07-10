@@ -34,8 +34,6 @@ dependencies {
     compile 'com.github.kostrovik:jfx-control-builder:master-SNAPSHOT'
     compile 'com.github.kostrovik:configurator:master-SNAPSHOT'
 
-    compile 'com.github.kostrovik:glc-mtx-deal:GMDeal_4-SNAPSHOT'
-
     testCompile "org.testfx:testfx-core:4.0.13-alpha"
     testCompile "org.testfx:testfx-junit5:4.0.13-alpha"
 
